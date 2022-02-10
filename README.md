@@ -1,2 +1,2 @@
 # Snake_Game
-Watch the AI, or play snake yourselfe
+Watch the AI, or play snake yourself
