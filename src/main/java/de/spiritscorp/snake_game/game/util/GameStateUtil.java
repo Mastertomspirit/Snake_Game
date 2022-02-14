@@ -27,7 +27,7 @@ public class GameStateUtil {
 	 * @return A double value, which represent the radar distance 
 	 */
 	public static double getStateForDirection(LinkedList<Snake> snake, Food food, Direction direction) {
-		Point nextMove[] = new Point[8];
+		Point nextMove[] = new Point[Vars.NEXT_STEP_LENGTH];
 		int bounds = 0;
 		
 		switch(direction) {
@@ -57,37 +57,21 @@ public class GameStateUtil {
 			break;
 		}
 
-		if(!nextMoveNotAble(snake, nextMove[0]))	return -10.0;
+		if(!nextMoveAble(snake, nextMove[0]))	return Vars.SNAKE_DIE_STATE;
 
 		double nextFiveSteps = nextFiveSteps(nextMove, food.getPosition(), snake);
 		
-		if(nextMove[0].equals(food.getPosition())) return 10.0 + nextFiveSteps;
+		if(nextMove[0].equals(food.getPosition())) return Vars.SNAKE_EAT_STATE + nextFiveSteps;
 				
 		if(direction == Direction.LEFT || direction == Direction.RIGHT) {
-			if(Math.abs(nextMove[0].x - food.getPosition().x) < Math.abs(snake.getFirst().getPosition().x - food.getPosition().x))	return 1.5 + nextFiveSteps;
+			if(Math.abs(nextMove[0].x - food.getPosition().x) < Math.abs(snake.getFirst().getPosition().x - food.getPosition().x))	return Vars.SNAKE_NEAR_TO_FOOD + nextFiveSteps;
 			else if(Math.abs(nextMove[0].x - food.getPosition().x) == Math.abs(snake.getFirst().getPosition().x - food.getPosition().x))	return 0 + nextFiveSteps;
-			else	return -1.5 + nextFiveSteps;
+			else	return Vars.SNAKE_NOT_NEAR_TO_FOOD + nextFiveSteps;
 		}else {
-			if(Math.abs(nextMove[0].y - food.getPosition().y) < Math.abs(snake.getFirst().getPosition().y - food.getPosition().y))	return 1.5 + nextFiveSteps;
+			if(Math.abs(nextMove[0].y - food.getPosition().y) < Math.abs(snake.getFirst().getPosition().y - food.getPosition().y))	return Vars.SNAKE_NEAR_TO_FOOD + nextFiveSteps;
 			else if(Math.abs(nextMove[0].y - food.getPosition().y) == Math.abs(snake.getFirst().getPosition().y - food.getPosition().y))	return 0 + nextFiveSteps;
-			else	return -1.5 + nextFiveSteps;
+			else	return Vars.SNAKE_NOT_NEAR_TO_FOOD + nextFiveSteps;
 		}
-	}
-
-	/**
-	 * Check if the next move is able
-	 * 
-	 * @param The snake
-	 * @param The point of the next move
-	 * @return true if no collision detected
-	 */
-	private static boolean nextMoveNotAble(LinkedList<Snake> snake, Point nextMove) {
-			for(Snake s : snake) {
-				if(s.getPosition().equals(nextMove)) return false;
-			}
-			if(snake.getFirst().getPosition().x - 10 < 0 || snake.getFirst().getPosition().x + 30 > Controller.GAME_WIDTH)	return false;
-			if(snake.getFirst().getPosition().y - 10 < 0 || snake.getFirst().getPosition().y + 60 > Controller.GAME_HEIGHT)	return false;
-		return true;
 	}
 
 	/**
@@ -115,32 +99,46 @@ public class GameStateUtil {
 	 * @return
 	 */
 	private static double nextFiveSteps(Point[] nextMove, Point food, LinkedList<Snake> snake) {
-			final double rewardPos = 1.37;
-			final double rewardFood = 2.99;
-			final double rewardNeg = 1.24;
-			double ret = 0;
-			boolean hit = false;
+		double ret = 0;
+		boolean hit = false;
 
-			for(int i = 1; i < nextMove.length; i++) {
-				if(nextMove[i].x < 0 || nextMove[i].x + 30 > Controller.GAME_WIDTH || nextMove[i].y < 0 || nextMove[i].y + 60 > Controller.GAME_HEIGHT) {
-					ret += -(rewardNeg / (i * 1.5));
-					hit = true;
-				}
-				else if(nextMove[i].equals(food))	{
-					ret += (rewardFood / i);
-					hit = true;
-				}
+		for(int i = 1; i < nextMove.length; i++) {
+			if(nextMove[i].x < 0 || nextMove[i].x >= Controller.GAME_WIDTH)			return ret;
+			else if( nextMove[i].y < 0 || nextMove[i].y >= Controller.GAME_HEIGHT) 	return ret - 1;
+			else if(nextMove[i].equals(food))	{
+				ret += (Vars.NEXT_STEP_FOOD / i);
+				hit = true;
+			}
+			
+			if(!hit) {
 				for(Snake boa : snake) {
-						if(boa.getPosition().equals(nextMove[i])) {
-							ret += -((rewardNeg * 3) / i);
-							hit = true;
-						}
-				}
-				if(!hit) {
-					ret += (rewardPos / (i * 2.5));
-					hit = false;
+					if(boa.getPosition().equals(nextMove[i])) {
+						return ret += -Vars.NEXT_STEP_NEGATIV;
+					}
 				}
 			}
-		return ret;
+			
+			if(!hit) {
+				ret += (Vars.NEXT_STEP_POSITIV / i);
+			}
+			hit = false;
+		}
+	return ret;
+	}
+
+	/**
+	 * Check if the next move is able
+	 * 
+	 * @param The snake
+	 * @param The point of the next move
+	 * @return true if no collision detected
+	 */
+	private static boolean nextMoveAble(LinkedList<Snake> snake, Point nextMove) {
+			for(Snake s : snake) {
+				if(s.getPosition().equals(nextMove)) return false;
+			}
+			if(snake.getFirst().getPosition().x < 0 || snake.getFirst().getPosition().x > Controller.GAME_WIDTH)	return false;
+			if(snake.getFirst().getPosition().y < 0 || snake.getFirst().getPosition().y > Controller.GAME_HEIGHT)	return false;
+		return true;
 	}
 }

@@ -5,7 +5,7 @@
  		
  	 	@author Tom Spirit
  	 	@date 2022
- 		@version	V1.0
+ 		@version	V1.2
 
 		Copyright (c) 2022 Tom Spirit
 		
@@ -31,16 +31,6 @@ import de.spiritscorp.snake_game.game.API;
 import de.spiritscorp.snake_game.game.Controller;
 
 public class Main {
-	
-	/**
-	 * The number of games which run for once
-	 */
-	public static final int ITERATIONS = 5;
-	
-	/**
-	 * The time in milliseconds between the steps
-	 */
-	public static final int VELOCITY = 100;
 	
 	public static boolean GAME_ON = true;				
 	public static boolean kiPlay = false;

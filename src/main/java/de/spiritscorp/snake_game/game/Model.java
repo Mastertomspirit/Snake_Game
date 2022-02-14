@@ -26,6 +26,7 @@ import java.util.LinkedList;
 
 import de.spiritscorp.snake_game.Main;
 import de.spiritscorp.snake_game.game.util.Direction;
+import de.spiritscorp.snake_game.game.util.Vars;
 
 final class Model {
 
@@ -51,12 +52,12 @@ final class Model {
 	void runGame() {
 		boolean running = true;
 		int score = 0;
-		for(int i = 0; i < Main.ITERATIONS; i++) {
+		for(int i = 0; i < Vars.ITERATIONS; i++) {
 			score = 0;
 			while(running) {
 				running = runStep();
 				if(running)		score = controller.getScore();
-				Main.waitMs(Main.VELOCITY);
+				Main.waitMs(Vars.VELOCITY);
 			}
 			average += score;
 			if(highscore < score) highscore = score;
@@ -64,7 +65,7 @@ final class Model {
 			running = true;
 			initGame();
 		}
-		average /= Main.ITERATIONS;
+		average /= Vars.ITERATIONS;
 		Main.GAME_ON = false;
 		controller.updateFrame();
 	}
@@ -118,8 +119,8 @@ final class Model {
 			if(snake.getFirst().getBounds().intersects(snake.get(i).getBounds()))		return false;
 		}
 		
-		if(snake.getFirst().getPosition().x - 10 < 0 || snake.getFirst().getPosition().x + 30 > Controller.GAME_WIDTH
-		   || snake.getFirst().getPosition().y - 10 < 0 || snake.getFirst().getPosition().y + 60 > Controller.GAME_HEIGHT)		return false;
+		if(snake.getFirst().getPosition().x < 0 || snake.getFirst().getPosition().x > Controller.GAME_WIDTH
+		   || snake.getFirst().getPosition().y < 0 || snake.getFirst().getPosition().y > Controller.GAME_HEIGHT)		return false;
 		
 		return true;
 	}

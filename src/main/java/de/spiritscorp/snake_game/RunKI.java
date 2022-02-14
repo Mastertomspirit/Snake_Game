@@ -32,9 +32,9 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 
 import de.spiritscorp.snake_game.game.API;
 import de.spiritscorp.snake_game.game.Controller;
-import de.spiritscorp.snake_game.game.util.Direction;
 import de.spiritscorp.snake_game.game.util.GameState;
 import de.spiritscorp.snake_game.game.util.GameStateUtil;
+import de.spiritscorp.snake_game.game.util.Vars;
 
 public class RunKI {
 
@@ -44,7 +44,7 @@ public class RunKI {
 
 	RunKI(){
 		game = new API(new Controller(true));
-		this.runGame("snakeNet-1643921391552.zip");
+		this.runGame("SnakeNet___Durch_90__Höchst_145__Zeit_1644609027469_167737200223500.zip");
 	}
 	
 	/**
@@ -56,7 +56,7 @@ public class RunKI {
 		int score = 0;
 		highscore = 0;
 		average = 0;
-		for(int i = 0; i < Main.ITERATIONS; i++) {
+		for(int i = 0; i < Vars.ITERATIONS; i++) {
 			score = 0;
 			game.initializeGame();
 			while(game.getGameRun()) {
@@ -64,7 +64,7 @@ public class RunKI {
 				final INDArray output = multiLayerNetwork.output(gameState.getMatrix(), false);
 				double[] data = output.data().asDouble();
 				int maxValueIndex = GameStateUtil.getMaxValueIndex(data);
-				game.move(Direction.getDirection(maxValueIndex));
+				game.move(maxValueIndex);
 				if(game.getGameRun()) score = game.getScore();
 				
 				Main.waitMs(25);
@@ -73,7 +73,7 @@ public class RunKI {
 			if(highscore < score) highscore = score;
 			average += score;
 		}
-		average /= Main.ITERATIONS;
+		average /= Vars.ITERATIONS;
 		System.out.println("Höchstpunktzahl:  " + highscore);
 		System.out.println("Durchschnitt:     " + average);
 		Main.GAME_ON = false;
@@ -90,7 +90,7 @@ public class RunKI {
         	Path ndPath = Paths.get(System.getProperty("user.home"), "Snake_Game");
         	Path netPath = ndPath.resolve(networkName);
         	if(!Files.exists(netPath)) {
-        		Files.createDirectory(ndPath);
+        		if(!Files.exists(ndPath))		Files.createDirectory(ndPath);
         		Files.copy(getClass().getClassLoader().getResourceAsStream(networkName), netPath, StandardCopyOption.REPLACE_EXISTING);
         	}
             return MultiLayerNetwork.load(netPath.toFile(), false);

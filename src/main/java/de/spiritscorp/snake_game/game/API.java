@@ -21,7 +21,9 @@
 */
 package de.spiritscorp.snake_game.game;
 
-import de.spiritscorp.snake_game.game.util.Direction;
+import java.awt.Point;
+
+import de.spiritscorp.snake_game.game.util.Action;
 import de.spiritscorp.snake_game.game.util.GameState;
 import de.spiritscorp.snake_game.game.util.GameStateUtil;
 
@@ -48,8 +50,8 @@ public final class API {
 	 * Move the snake for one Step at the given direction 
 	 * @param direction The direction where the snake should go
 	 */
-	public void move(final Direction direction) {
-		controller.setDirection(direction);
+	public void move(final int action) {
+		controller.setDirection(Action.toDirection(controller.getSnake().getFirst().getPosition(), controller.getSnake().get(1).getPosition(), Action.getAction(action)));
 		gameRun = controller.runStep();
 	}
 
@@ -58,11 +60,12 @@ public final class API {
 	 * @return <b>GameState</b> </br>The game state
 	 */
 	public GameState buildStateObservation() {
+		Point head = controller.getSnake().getFirst().getPosition();
+		Point neck = controller.getSnake().get(1).getPosition();
 		return new GameState(new double[] {
-				GameStateUtil.getStateForDirection(controller.getSnake(), controller.getFood(), Direction.UP),
-				GameStateUtil.getStateForDirection(controller.getSnake(), controller.getFood(), Direction.DOWN),
-				GameStateUtil.getStateForDirection(controller.getSnake(), controller.getFood(), Direction.LEFT),
-				GameStateUtil.getStateForDirection(controller.getSnake(), controller.getFood(), Direction.RIGHT)
+				GameStateUtil.getStateForDirection(controller.getSnake(), controller.getFood(), Action.toDirection(head, neck, Action.LEFT)),
+				GameStateUtil.getStateForDirection(controller.getSnake(), controller.getFood(), Action.toDirection(head, neck, Action.FORWARD)),
+				GameStateUtil.getStateForDirection(controller.getSnake(), controller.getFood(), Action.toDirection(head, neck, Action.RIGHT))
 		});
 	}
 	

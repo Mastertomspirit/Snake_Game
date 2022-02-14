@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.spiritscorp</groupId>
   <artifactId>snake_game</artifactId>
-  <version>V1.0</version>
+  <version>V1.2</version>
   <name>Snake Game</name>
   <description>Play snake or watch the KI to play</description>
 	<properties>
